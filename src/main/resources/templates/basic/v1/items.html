@@ -13,7 +13,7 @@
         <div class="col">
             <button class="btn btn-primary float-end"
                     onclick="location.href='addForm.html'"
-                    th:onclick="|location.href='@{/basic/items/add}'|"
+                    th:onclick="|location.href='@{/basic/items/v1/add}'|"
                     type="button"
                     th:text="#{page.addItem}">
                 상품 등록
@@ -39,8 +39,8 @@
 <!--            <td>10</td>-->
 <!--        </tr>-->
             <tr th:each="item : ${items}">
-                <td><a th:href="@{|/basic/items/${item.id}|}" th:text="${item.id}">상품 ID</a></td>
-                <td><a th:href="@{/basic/items/{itemId}(itemId=${item.id})}" th:text="${item.itemName}">상품 이름</a></td>
+                <td><a th:href="@{|/basic/items/v1/${item.id}|}" th:text="${item.id}">상품 ID</a></td>
+                <td><a th:href="@{/basic/items/v1/{itemId}(itemId=${item.id})}" th:text="${item.itemName}">상품 이름</a></td>
                 <td th:text="${item.price}">상품 가격</td>
                 <td th:text="${item.quantity}">상품 수량</td>
             </tr>

@@ -40,7 +40,7 @@
         <div class="col">
             <button class="w-100 btn btn-primary btn-lg"
                     onclick="location.href='editForm.html'"
-                    th:onclick="|location.href='@{|/basic/items/${item.id}/edit|}'|"
+                    th:onclick="|location.href='@{|/basic/items/v1/${item.id}/edit|}'|"
                     type="button"
                     th:text="#{page.updateItem}">
                 상품 수정
@@ -49,7 +49,7 @@
         <div class="col">
             <button class="w-100 btn btn-secondary btn-lg"
                     onclick="location.href='items.html'"
-                    th:onclick="|location.href='@{/basic/items}'|"
+                    th:onclick="|location.href='@{/basic/items/v1}'|"
                     type="button"
                     th:text="#{page.items}">
                 목록으로
