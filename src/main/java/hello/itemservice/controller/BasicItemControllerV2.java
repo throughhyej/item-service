@@ -114,7 +114,7 @@ public class BasicItemControllerV2 {
          * **/
 
         if (!StringUtils.hasText(item.getItemName())) {
-            bindingResult.addError(new FieldError("item", "itemName", ms.getMessage("validation.item.name", null, "Item name is required.", null)));
+            bindingResult.addError(new FieldError("item", "itemName", ms.getMessage("validation.item.itemName", null, "Item name is required.", null)));
         }
         if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
             bindingResult.addError(new FieldError("item", "price", ms.getMessage("validation.item.price", null, "price range (1000 <= price <= 1,000,000)", null)));
@@ -140,11 +140,11 @@ public class BasicItemControllerV2 {
         return "redirect:/basic/items/v2/{itemId}"; // PRG: URL encoding 문제 해결됨
     }
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String saveItemV7(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
         if (!StringUtils.hasText(item.getItemName())) {
-            bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, null, null, ms.getMessage("validation.item.name", null, "Item name is required.", null)));
+            bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, null, null, ms.getMessage("validation.item.itemName", null, "Item name is required.", null)));
         }
         if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
             bindingResult.addError(new FieldError("item", "price", item.getPrice(), false, null, null, ms.getMessage("validation.item.price", null, "price range (1000 <= price <= 1,000,000)", null)));
@@ -156,6 +156,74 @@ public class BasicItemControllerV2 {
             int result = item.getPrice() * item.getQuantity();
             if (result < 10000) {
                 bindingResult.addError(new ObjectError("item", ms.getMessage("validation.item.globalError", new Object[] {result}, "price * quantity = {0} (price * quantity <= 10,000)", null)));
+            }
+        }
+
+        if (bindingResult.hasErrors()) {
+            log.info("## errors : {} ", bindingResult);
+            return "basic/v2/addForm";
+        }
+
+        Item saveItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", saveItem.getId()); // uri 치환
+        redirectAttributes.addAttribute("status", true); // Query String
+        return "redirect:/basic/items/v2/{itemId}"; // PRG: URL encoding 문제 해결됨
+    }
+
+//    @PostMapping("/add")
+    public String saveItemV8(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        /* 에러 다국어 처리 변경
+         * 소스 통일화 시키기 위해 기존 messageSource 및 default value 사용이 나아보임
+         * defaultValue: 운영 시 도움은 되겠지만, 수정할 부분이 하나 더 추가됨
+         **/
+
+        if (!StringUtils.hasText(item.getItemName())) {
+            bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, new String[] {"validation.item.itemName"}, null, "상품 이름은 필수입니다."));
+        }
+        if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
+            bindingResult.addError(new FieldError("item", "price", item.getPrice(), false, new String[] {"validation.item.price"}, new Object[] {1000, 1000000}, "가격은 1,000 ~ 1,000,000 까지 허용합니다."));
+        }
+        if (item.getQuantity() == null || item.getQuantity() > 9999) {
+            bindingResult.addError(new FieldError("item", "quantity", item.getQuantity(), false, new String[] {"validation.item.quantity"}, new Object[] {9999}, "수량은 최대 9.999 까지 허용합니다."));
+        }
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int result = item.getPrice() * item.getQuantity();
+            if (result < 10000) {
+                bindingResult.addError(new ObjectError("item", new String[] {"validation.item.globalError"}, new Object[] {10000, result}, "가격 * 수량의 곱은 10,000원 이상이어야 합니다. 현재 값 = " + result));
+            }
+        }
+
+        if (bindingResult.hasErrors()) {
+            log.info("## errors : {} ", bindingResult);
+            return "basic/v2/addForm";
+        }
+
+        Item saveItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", saveItem.getId()); // uri 치환
+        redirectAttributes.addAttribute("status", true); // Query String
+        return "redirect:/basic/items/v2/{itemId}"; // PRG: URL encoding 문제 해결됨
+    }
+
+    @PostMapping("/add")
+    public String saveItemV9(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        if (!StringUtils.hasText(item.getItemName())) {
+            // validation.item.itemName
+            bindingResult.rejectValue("itemName", "validation", "상품 이름은 필수입니다.");
+        }
+        if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
+            // validation.item.price
+            bindingResult.rejectValue("price", "validation", new Object[] {1000, 1000000}, "가격은 10,000 ~ 1,000,000 까지 허용합니다.");
+        }
+        if (item.getQuantity() == null || item.getQuantity() > 9999) {
+            // validation.item.quantity
+            bindingResult.rejectValue("quantity", "validation", new Object[] {9999}, "수량은 최대 9.999 까지 허용합니다.");
+        }
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int result = item.getPrice() * item.getQuantity();
+            if (result < 10000) {
+                bindingResult.reject("validation.item.globalError", new Object[] {10000, result}, "가격 * 수량의 곱은 10,000원 이상이어야 합니다. 현재 값 = " + result);
             }
         }
 
