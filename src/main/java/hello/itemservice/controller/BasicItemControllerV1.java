@@ -1,4 +1,4 @@
-package hello.itemservice;
+package hello.itemservice.controller;
 
 import hello.itemservice.domain.Item;
 import hello.itemservice.domain.ItemMemoryRepository;
@@ -21,12 +21,12 @@ import java.util.Map;
 @Slf4j
 @Controller
 @RequestMapping("/basic/items/v1")
-public class BasicItemController {
+public class BasicItemControllerV1 {
 
     @Autowired MessageSource ms;
 
     private final ItemRepository itemRepository;
-    public BasicItemController(ItemMemoryRepository itemRepository) {
+    public BasicItemControllerV1(ItemMemoryRepository itemRepository) {
         this.itemRepository = itemRepository;
     }
 
