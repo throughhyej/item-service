@@ -15,6 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -37,6 +39,13 @@ public class BasicItemControllerV2 {
     public BasicItemControllerV2(ItemMemoryRepository itemRepository, ItemValidator validator) {
         this.itemRepository = itemRepository;
         this.validator = validator;
+    }
+
+    @InitBinder
+    public void init(WebDataBinder dataBinder) {
+        // 해당 컨트롤러에서 메소드가 호출될 때마다 validator 적용
+        // 검증기 여러개일 때, supports()가 사용됨
+        dataBinder.addValidators(validator);
     }
 
     @PostConstruct
@@ -258,7 +267,7 @@ public class BasicItemControllerV2 {
     }
 
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String saveItemV10(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
         // 검증 코드 분리
@@ -277,5 +286,26 @@ public class BasicItemControllerV2 {
         redirectAttributes.addAttribute("status", true); // Query String
         return "redirect:/basic/items/v2/{itemId}"; // PRG: URL encoding 문제 해결됨
     }
+
+    @PostMapping("/add")
+    public String saveItemV11(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        // 최상단 @InitBinder와 @Validated 로 대체
+        // if( validator.supports(item.getClass()) ) {
+        //     validator.validate(item, bindingResult);
+        // }
+
+        /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
+        if (bindingResult.hasErrors()) {
+            log.info("## errors : {} ", bindingResult);
+            return "basic/v2/addForm";
+        }
+
+        Item saveItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", saveItem.getId()); // uri 치환
+        redirectAttributes.addAttribute("status", true); // Query String
+        return "redirect:/basic/items/v2/{itemId}"; // PRG: URL encoding 문제 해결됨
+    }
+
 
 }
