@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -208,18 +209,22 @@ public class BasicItemControllerV2 {
     @PostMapping("/add")
     public String saveItemV9(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
-        if (!StringUtils.hasText(item.getItemName())) {
-            // validation.item.itemName
-            bindingResult.rejectValue("itemName", "validation", "상품 이름은 필수입니다.");
-        }
+//        if (!StringUtils.hasText(item.getItemName())) {
+//            // validation.item.itemName
+//            bindingResult.rejectValue("itemName", "validation", "상품 이름은 필수입니다.");
+//        }
+        ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "validation", "상품 이름은 필수입니다.");
+
         if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
             // validation.item.price
             bindingResult.rejectValue("price", "validation", new Object[] {1000, 1000000}, "가격은 10,000 ~ 1,000,000 까지 허용합니다.");
         }
+
         if (item.getQuantity() == null || item.getQuantity() > 9999) {
             // validation.item.quantity
             bindingResult.rejectValue("quantity", "validation", new Object[] {9999}, "수량은 최대 9.999 까지 허용합니다.");
         }
+
         if (item.getPrice() != null && item.getQuantity() != null) {
             int result = item.getPrice() * item.getQuantity();
             if (result < 10000) {
