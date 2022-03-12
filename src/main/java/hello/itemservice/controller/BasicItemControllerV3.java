@@ -79,6 +79,13 @@ public class BasicItemControllerV3 {
 
         // @Validated로 domain에 붙은 validation 어노테이션이 작동
 
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int result = item.getPrice() * item.getQuantity();
+            if (result < 10000) {
+                bindingResult.reject("validation.item.globalError", new Object[] {10000, result}, "가격 * 수량의 곱은 10,000원 이상이어야 합니다. 현재 값 = " + result);
+            }
+        }
+
         /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
         if (bindingResult.hasErrors()) {
             log.info("## errors : {} ", bindingResult);
