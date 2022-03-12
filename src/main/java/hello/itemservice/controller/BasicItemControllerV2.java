@@ -290,6 +290,11 @@ public class BasicItemControllerV2 {
     @PostMapping("/add")
     public String saveItemV11(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
+        // @Validated -> 스프링 표준
+        // @Valid -> 자바 표준
+        // 둘 다 사용 가능하나, 자바 표준 사용하기 위해서는 build.gradle 에 아래 설정 추가 필요
+        // implementation 'org.springframework.boot:spring-boot-starter-validation'
+
         // 최상단 @InitBinder와 @Validated 로 대체
         // if( validator.supports(item.getClass()) ) {
         //     validator.validate(item, bindingResult);
