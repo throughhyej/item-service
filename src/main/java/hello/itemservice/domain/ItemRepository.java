@@ -11,6 +11,7 @@ public interface ItemRepository {
     Item findById(Long id);
     Item save(Item item);
     Item update(Long id, ItemDto item);
+    Item update(Long id, Item item);
 
     void clearStore();
 

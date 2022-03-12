@@ -62,9 +62,18 @@ public class BasicItemControllerV3 {
     }
 
     @PostMapping("/{itemId}/edit")
-    public String updateItem(@PathVariable Long itemId, @ModelAttribute ItemDto itemDto, Model model) {
-        Item item = itemRepository.update(itemId, itemDto);
-        model.addAttribute("item", item);
+    public String updateItem(@PathVariable Long itemId, @Validated @ModelAttribute Item item, BindingResult bindingResult, Model model) {
+
+        // DTO 사용이 관리해야할 소스가 중복 (entity에 메시지 정의시)
+        this.objectErrorValidator(item, bindingResult);
+
+        /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
+        if (bindingResult.hasErrors()) {
+            log.info("## errors : {} ", bindingResult);
+            return "basic/v3/editForm";
+        }
+
+        itemRepository.update(itemId, item);
         return "redirect:/basic/items/v3/{itemId}";
     }
 
@@ -79,12 +88,7 @@ public class BasicItemControllerV3 {
 
         // @Validated로 domain에 붙은 validation 어노테이션이 작동
 
-        if (item.getPrice() != null && item.getQuantity() != null) {
-            int result = item.getPrice() * item.getQuantity();
-            if (result < 10000) {
-                bindingResult.reject("validation.item.globalError", new Object[] {10000, result}, "가격 * 수량의 곱은 10,000원 이상이어야 합니다. 현재 값 = " + result);
-            }
-        }
+        this.objectErrorValidator(item, bindingResult);
 
         /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
         if (bindingResult.hasErrors()) {
@@ -98,5 +102,13 @@ public class BasicItemControllerV3 {
         return "redirect:/basic/items/v3/{itemId}"; // PRG: URL encoding 문제 해결됨
     }
 
+    private void objectErrorValidator(Item item, BindingResult bindingResult) {
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int result = item.getPrice() * item.getQuantity();
+            if (result < 10000) {
+                bindingResult.reject("validation.item.globalError", new Object[] {10000, result}, "가격 * 수량의 곱은 10,000원 이상이어야 합니다. 현재 값 = " + result);
+            }
+        }
+    }
 
 }

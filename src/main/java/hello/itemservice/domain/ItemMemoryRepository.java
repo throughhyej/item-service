@@ -33,11 +33,22 @@ public class ItemMemoryRepository implements ItemRepository{
 
     @Override
     public Item update(Long id, ItemDto item) {
+        Item findItem = this.updateLogin(id, new Item(item.getItemName(), item.getPrice(), item.getQuantity()));
+        return store.put(id, findItem);
+    }
+
+    @Override
+    public Item update(Long id, Item item) {
+        Item findItem = this.updateLogin(id, item);
+        return store.put(id, findItem);
+    }
+
+    private Item updateLogin(Long id, Item item) {
         Item findItem = store.get(id);
         findItem.setItemName(item.getItemName());
         findItem.setPrice(item.getPrice());
         findItem.setQuantity(item.getQuantity());
-        return store.put(id, findItem);
+        return findItem;
     }
 
     public void clearStore() {
