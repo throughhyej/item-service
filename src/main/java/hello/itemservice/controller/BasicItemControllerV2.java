@@ -209,6 +209,12 @@ public class BasicItemControllerV2 {
     @PostMapping("/add")
     public String saveItemV9(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
+        /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
+        if (bindingResult.hasErrors()) {
+            log.info("## errors : {} ", bindingResult);
+            return "basic/v2/addForm";
+        }
+
 //        if (!StringUtils.hasText(item.getItemName())) {
 //            // validation.item.itemName
 //            bindingResult.rejectValue("itemName", "validation", "상품 이름은 필수입니다.");
@@ -232,10 +238,13 @@ public class BasicItemControllerV2 {
             }
         }
 
+        /*
+        위치 이동
         if (bindingResult.hasErrors()) {
             log.info("## errors : {} ", bindingResult);
             return "basic/v2/addForm";
         }
+        */
 
         Item saveItem = itemRepository.save(item);
         redirectAttributes.addAttribute("itemId", saveItem.getId()); // uri 치환
