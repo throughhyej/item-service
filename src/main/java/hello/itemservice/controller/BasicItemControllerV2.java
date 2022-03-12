@@ -4,6 +4,7 @@ import hello.itemservice.domain.Item;
 import hello.itemservice.domain.ItemMemoryRepository;
 import hello.itemservice.domain.ItemRepository;
 import hello.itemservice.dto.ItemDto;
+import hello.itemservice.validatior.ItemValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -18,20 +19,24 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
+//@RequiredArgsConstructor
 @RequestMapping("/basic/items/v2")
 public class BasicItemControllerV2 {
 
     @Autowired MessageSource ms;
 
     private final ItemRepository itemRepository;
-    public BasicItemControllerV2(ItemMemoryRepository itemRepository) {
+    private final ItemValidator validator;
+
+    // @Autowired // 생성자 하나뿐이어서 생략
+    // @RequiredArgsConstructor 설정으로 아래 생성자 주석처리 가능 (lombok이 자동으로 처리)
+    public BasicItemControllerV2(ItemMemoryRepository itemRepository, ItemValidator validator) {
         this.itemRepository = itemRepository;
+        this.validator = validator;
     }
 
     @PostConstruct
@@ -206,7 +211,7 @@ public class BasicItemControllerV2 {
         return "redirect:/basic/items/v2/{itemId}"; // PRG: URL encoding 문제 해결됨
     }
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String saveItemV9(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
         /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
@@ -245,6 +250,27 @@ public class BasicItemControllerV2 {
             return "basic/v2/addForm";
         }
         */
+
+        Item saveItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", saveItem.getId()); // uri 치환
+        redirectAttributes.addAttribute("status", true); // Query String
+        return "redirect:/basic/items/v2/{itemId}"; // PRG: URL encoding 문제 해결됨
+    }
+
+
+    @PostMapping("/add")
+    public String saveItemV10(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        // 검증 코드 분리
+        if( validator.supports(item.getClass()) ) {
+            validator.validate(item, bindingResult);
+        }
+
+        /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
+        if (bindingResult.hasErrors()) {
+            log.info("## errors : {} ", bindingResult);
+            return "basic/v2/addForm";
+        }
 
         Item saveItem = itemRepository.save(item);
         redirectAttributes.addAttribute("itemId", saveItem.getId()); // uri 치환
