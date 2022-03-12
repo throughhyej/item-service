@@ -1,8 +1,6 @@
 package hello.itemservice.controller;
 
-import hello.itemservice.domain.Item;
-import hello.itemservice.domain.ItemMemoryRepository;
-import hello.itemservice.domain.ItemRepository;
+import hello.itemservice.domain.*;
 import hello.itemservice.dto.ItemDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +59,24 @@ public class BasicItemControllerV3 {
         return "basic/v3/editForm";
     }
 
-    @PostMapping("/{itemId}/edit")
+//    @PostMapping("/{itemId}/edit")
     public String updateItem(@PathVariable Long itemId, @Validated @ModelAttribute Item item, BindingResult bindingResult, Model model) {
+
+        // DTO 사용이 관리해야할 소스가 중복 (entity에 메시지 정의시)
+        this.objectErrorValidator(item, bindingResult);
+
+        /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
+        if (bindingResult.hasErrors()) {
+            log.info("## errors : {} ", bindingResult);
+            return "basic/v3/editForm";
+        }
+
+        itemRepository.update(itemId, item);
+        return "redirect:/basic/items/v3/{itemId}";
+    }
+
+    @PostMapping("/{itemId}/edit")
+    public String updateItem2(@PathVariable Long itemId, @Validated(UpdateCheck.class) @ModelAttribute Item item, BindingResult bindingResult, Model model) {
 
         // DTO 사용이 관리해야할 소스가 중복 (entity에 메시지 정의시)
         this.objectErrorValidator(item, bindingResult);
@@ -83,8 +97,27 @@ public class BasicItemControllerV3 {
         return "basic/v3/addForm";
     }
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String saveItem(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        // @Validated로 domain에 붙은 validation 어노테이션이 작동
+
+        this.objectErrorValidator(item, bindingResult);
+
+        /** 전방에 위치시켜 빈값일 때, 선처리 가능 **/
+        if (bindingResult.hasErrors()) {
+            log.info("## errors : {} ", bindingResult);
+            return "basic/v3/addForm";
+        }
+
+        Item saveItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", saveItem.getId()); // uri 치환
+        redirectAttributes.addAttribute("status", true); // Query String
+        return "redirect:/basic/items/v3/{itemId}"; // PRG: URL encoding 문제 해결됨
+    }
+
+    @PostMapping("/add")
+    public String saveItem2(@Validated(SaveCheck.class) @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
         // @Validated로 domain에 붙은 validation 어노테이션이 작동
 
