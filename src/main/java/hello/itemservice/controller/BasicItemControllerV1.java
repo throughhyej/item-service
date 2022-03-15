@@ -1,8 +1,8 @@
 package hello.itemservice.controller;
 
-import hello.itemservice.domain.Item;
-import hello.itemservice.domain.ItemMemoryRepository;
-import hello.itemservice.domain.ItemRepository;
+import hello.itemservice.domain.item.Item;
+import hello.itemservice.domain.item.ItemMemoryRepository;
+import hello.itemservice.domain.item.ItemRepository;
 import hello.itemservice.dto.ItemDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,8 @@ public class BasicItemControllerV1 {
     @PostConstruct
     public void init() {
         /* 테스트 데이터 세팅 */
-        itemRepository.save(new Item("itemA", 5000, 10));
-        itemRepository.save(new Item("itemB", 7000, 19));
+//        itemRepository.save(new Item("itemA", 5000, 10));
+//        itemRepository.save(new Item("itemB", 7000, 19));
     }
 
     @GetMapping

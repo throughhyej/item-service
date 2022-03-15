@@ -1,6 +1,10 @@
 package hello.itemservice.controller;
 
 import hello.itemservice.domain.*;
+import hello.itemservice.domain.item.Item;
+import hello.itemservice.domain.item.ItemMemoryRepository;
+import hello.itemservice.domain.item.ItemRepository;
+import hello.itemservice.domain.item.ItemV2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

@@ -1,9 +1,8 @@
-package hello.itemservice.domain;
+package hello.itemservice.domain.item;
 
 import hello.itemservice.dto.ItemDto;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ItemRepository {
 

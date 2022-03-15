@@ -1,4 +1,4 @@
-package hello.itemservice.domain;
+package hello.itemservice.domain.item;
 
 import lombok.Getter;
 import lombok.Setter;
