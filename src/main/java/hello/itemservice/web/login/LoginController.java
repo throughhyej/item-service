@@ -4,6 +4,7 @@ import hello.itemservice.domain.login.LoginService;
 import hello.itemservice.domain.member.Member;
 import hello.itemservice.domain.member.MemberRepository;
 import hello.itemservice.web.member.LoginForm;
+import hello.itemservice.web.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginController {
 
     private final LoginService loginService;
+    private final SessionManager sessionManager;
     private static final String COOKIE_NAME = "memberId";
 
     @GetMapping("/login")
@@ -28,8 +30,8 @@ public class LoginController {
         return "login/login";
     }
 
-    @PostMapping("/login")
-    public String login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
+//    @PostMapping("/login")
+    public String loginCookie(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             return "/login/login" ;
         }
@@ -44,7 +46,7 @@ public class LoginController {
         // Cookie 이용 (다음의 보안 문제로 사용하지 않음)
         // 1. 쿠키값은 임의로 변경이 가능하다.
         // 2. 탈취 가능 (중요한 정보 담지 말기)
-        // => 대안 (토큰: 서버에서 토큰 만료시간 짧게 지정) : session
+        // => 대안 (토큰: + 서버에서 토큰 만료시간 짧게 지정) : session
         Cookie cookie = new Cookie(COOKIE_NAME, String.valueOf(login.getId()));
         response.addCookie(cookie);
 
@@ -52,12 +54,38 @@ public class LoginController {
         return "redirect:/";
     }
 
-    @PostMapping("/logout")
-    public String logout(HttpServletResponse response) {
+    @PostMapping("/login")
+    public String loginSession(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
+        if (bindingResult.hasErrors()) {
+            return "/login/login" ;
+        }
+
+        Member login = loginService.login(loginForm.getLoginId(), loginForm.getPwd());
+
+        if (login == null) {
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 불일치");
+            return "/login/login" ;
+        }
+
+        // session 이용
+        sessionManager.createSession(login, response);
+
+        log.info("### 로그인 성공 ###");
+        return "redirect:/";
+    }
+
+//    @PostMapping("/logout")
+    public String logoutCooike(HttpServletResponse response) {
         Cookie cookie = new Cookie(COOKIE_NAME, null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
+        return "redirect:/";
+    }
+
+    @PostMapping("/logout")
+    public String logoutSession(HttpServletRequest request) {
+        sessionManager.expire(request);
         return "redirect:/";
     }
 }
