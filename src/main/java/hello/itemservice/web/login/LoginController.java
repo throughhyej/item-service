@@ -4,6 +4,7 @@ import hello.itemservice.domain.login.LoginService;
 import hello.itemservice.domain.member.Member;
 import hello.itemservice.domain.member.MemberRepository;
 import hello.itemservice.web.member.LoginForm;
+import hello.itemservice.web.session.HttpServletSessionConstants;
 import hello.itemservice.web.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Slf4j
 @Controller
@@ -54,7 +56,7 @@ public class LoginController {
         return "redirect:/";
     }
 
-    @PostMapping("/login")
+//    @PostMapping("/login")
     public String loginSession(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             return "/login/login" ;
@@ -74,6 +76,27 @@ public class LoginController {
         return "redirect:/";
     }
 
+//    @PostMapping("/login")
+    public String loginServletSession(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            return "/login/login" ;
+        }
+
+        Member login = loginService.login(loginForm.getLoginId(), loginForm.getPwd());
+
+        if (login == null) {
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 불일치");
+            return "/login/login" ;
+        }
+
+        // HTTP Servlet session 이용
+        HttpSession session = request.getSession();
+        session.setAttribute(HttpServletSessionConstants.SERVLET_SESSION, login);
+
+        log.info("### 로그인 성공 ###");
+        return "redirect:/";
+    }
+
 //    @PostMapping("/logout")
     public String logoutCooike(HttpServletResponse response) {
         Cookie cookie = new Cookie(COOKIE_NAME, null);
@@ -83,9 +106,17 @@ public class LoginController {
         return "redirect:/";
     }
 
-    @PostMapping("/logout")
+//    @PostMapping("/logout")
     public String logoutSession(HttpServletRequest request) {
         sessionManager.expire(request);
+        return "redirect:/";
+    }
+
+    @PostMapping("/logout")
+    public String logoutServletSession(HttpServletRequest request) {
+        // 세션 null 일 때, 신규로 생성하지 못하게 false 설정
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
         return "redirect:/";
     }
 }
