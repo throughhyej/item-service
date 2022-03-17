@@ -76,7 +76,7 @@ public class LoginController {
         return "redirect:/";
     }
 
-//    @PostMapping("/login")
+    @PostMapping("/login")
     public String loginServletSession(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return "/login/login" ;
