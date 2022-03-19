@@ -13,7 +13,7 @@ import java.io.IOException;
 @Slf4j
 public class LoginFilter implements Filter {
 
-    private static final String[] WHITE_LIST = new String[] {"/", "/login", "/logout", "/css/*"};
+    private static final String[] WHITE_LIST = new String[] {"/", "/login", "/logout", "/css/*", "/members/add"};
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -27,7 +27,7 @@ public class LoginFilter implements Filter {
                 log.info("@@@ 미인증 사용자 redirect @@@");
                 HttpSession session = httpRequest.getSession();
                 if (session == null || session.getAttribute(HttpServletSessionConstants.SERVLET_SESSION) == null) {
-                    httpResponse.sendRedirect("/login?redirectURI=/basic/items/v4");
+                    httpResponse.sendRedirect("/login?redirectURI=" + httpRequest.getRequestURI());
                     return ;
                 }
 
