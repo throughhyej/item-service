@@ -76,7 +76,7 @@ public class LoginController {
         return "redirect:/";
     }
 
-    @PostMapping("/login")
+//    @PostMapping("/login")
     public String loginServletSession(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return "/login/login" ;
@@ -95,6 +95,29 @@ public class LoginController {
 
         log.info("### 로그인 성공 ###");
         return "redirect:/";
+    }
+
+    @PostMapping("/login")
+    public String login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult,
+                        @RequestParam(defaultValue = "/") String redirectUrl,
+                        HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            return "/login/login" ;
+        }
+
+        Member login = loginService.login(loginForm.getLoginId(), loginForm.getPwd());
+
+        if (login == null) {
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 불일치");
+            return "/login/login" ;
+        }
+
+        // HTTP Servlet session 이용
+        HttpSession session = request.getSession();
+        session.setAttribute(HttpServletSessionConstants.SERVLET_SESSION, login);
+
+        log.info("### 로그인 성공 ###");
+        return "redirect:" + redirectUrl;
     }
 
 //    @PostMapping("/logout")
