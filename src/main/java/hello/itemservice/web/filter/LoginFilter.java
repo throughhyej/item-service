@@ -27,7 +27,7 @@ public class LoginFilter implements Filter {
                 log.info("@@@ 미인증 사용자 redirect @@@");
                 HttpSession session = httpRequest.getSession();
                 if (session == null || session.getAttribute(HttpServletSessionConstants.SERVLET_SESSION) == null) {
-                    httpResponse.sendRedirect("/login?redirectUri=/basic/items/v4");
+                    httpResponse.sendRedirect("/login?redirectURI=/basic/items/v4");
                     return ;
                 }
 

@@ -99,8 +99,14 @@ public class LoginController {
 
     @PostMapping("/login")
     public String login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult,
-                        @RequestParam(defaultValue = "/") String redirectUrl,
+                        @RequestParam(defaultValue = "/") String redirectURI,
                         HttpServletRequest request) {
+
+        log.info("### redirect => {} ###", redirectURI);
+        request.getParameterNames()
+                .asIterator()
+                .forEachRemaining(item -> log.info("### parameter name => {}, value => {} ###", item, request.getParameter(item)));
+
         if (bindingResult.hasErrors()) {
             return "/login/login" ;
         }
@@ -116,8 +122,8 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.setAttribute(HttpServletSessionConstants.SERVLET_SESSION, login);
 
-        log.info("### 로그인 성공 ###");
-        return "redirect:" + redirectUrl;
+        log.info("### 로그인 성공 redirect => {} ###", redirectURI);
+        return "redirect:" + redirectURI;
     }
 
 //    @PostMapping("/logout")
