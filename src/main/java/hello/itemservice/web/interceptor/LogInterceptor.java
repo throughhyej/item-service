@@ -26,7 +26,7 @@ public class LogInterceptor implements HandlerInterceptor {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
         }
 
-        log.info("### REQ START @@ UUID: [{}], URI: [{}], handler: [{}] ###", uuid, request.getRequestURI(), handler);
+        log.info("### interceptor :: REQ START @@ UUID: [{}], dispatcherType: [{}], URI: [{}], handler: [{}] ###", uuid, request.getDispatcherType(), request.getRequestURI(), handler);
         return true;
     }
 
@@ -34,7 +34,7 @@ public class LogInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 //        HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
         /** Handler Adaptor > Controller 호출 후 : 예외 발생 시 호출되지 않음 **/
-        log.info("### REQ MID @@ mv => {}", modelAndView);
+        log.info("### interceptor ::  REQ MID @@ mv => {}", modelAndView);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class LogInterceptor implements HandlerInterceptor {
 //        HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
         /** View까지 반환 후 호출됨 : 예외 발생해도 무조건 호출됨 **/
         String uuid = String.valueOf(request.getAttribute(LOG_UUID));
-        log.info("### RES END @@ UUID: [{}], URI: [{}], handler: [{}] ###", uuid, request.getRequestURI(), handler);
-        if (ex != null) log.error("### AFTER COMPLETION ERR => ", ex);
+        log.info("### interceptor :: RES END @@ UUID: [{}], dispatcherType: [{}], URI: [{}], handler: [{}] ###", uuid, request.getDispatcherType(), request.getRequestURI(), handler);
+        if (ex != null) log.error("###  interceptor :: AFTER COMPLETION ERR => ", ex);
     }
 }
