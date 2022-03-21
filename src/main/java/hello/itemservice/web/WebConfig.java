@@ -12,6 +12,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.util.List;
 
@@ -40,13 +41,15 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/*.css", "/*.ico", "/*err*", "/error-page/*", "/members/add", "/login", "/");
     }
 
-//    @Bean
+    @Bean
     public FilterRegistrationBean logFilter() {
         /** Servlet Filter 예제 **/
         FilterRegistrationBean<Filter> logFilterBean = new FilterRegistrationBean<>();
         logFilterBean.setFilter(new LogServletFilter());
         logFilterBean.setOrder(1);
         logFilterBean.addUrlPatterns("/*");
+        logFilterBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ERROR);
+        // request와 error 일 때만 호출이 됨
         return logFilterBean;
     }
 

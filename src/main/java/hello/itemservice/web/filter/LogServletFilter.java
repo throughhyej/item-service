@@ -24,12 +24,12 @@ public class LogServletFilter implements Filter {
         String uuid = UUID.randomUUID().toString();
 
         try {
-            log.info("### REQ [{}] => {} ### ", uuid, httpReq.getRequestURI());
+            log.info("### REQ [{}], type: {} => {} ### ", uuid, request.getDispatcherType(), httpReq.getRequestURI());
             chain.doFilter(request, response);
         } catch (Exception ex) {
             throw ex;
         } finally {
-            log.info("### RES [{}] => {} ###", uuid, httpReq.getRequestURI());
+            log.info("### RES [{}], type: {} => {} ###", uuid, request.getDispatcherType(), httpReq.getRequestURI());
         }
 
     }
