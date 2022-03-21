@@ -2,12 +2,14 @@ package hello.itemservice.web;
 
 import hello.itemservice.domain.member.Member;
 import hello.itemservice.domain.member.MemberRepository;
+import hello.itemservice.web.argumentResolver.Login;
 import hello.itemservice.web.session.HttpServletSessionConstants;
 import hello.itemservice.web.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
@@ -21,12 +23,12 @@ public class HomeController {
     private final MemberRepository memberRepository;
     private final SessionManager sessionManager;
 
-//    @RequestMapping("/")
+//    @GetMapping("/")
 //    public String home() {
 //        return "home";
 //    }
 
-//    @RequestMapping("/")
+//    @GetMapping("/")
     public String homeCookie(@CookieValue(name = "memberId", required = false) Long memberId, Model model) {
 
         if (memberId == null) return "home";
@@ -38,7 +40,7 @@ public class HomeController {
         return "loginHome";
     }
 
-//    @RequestMapping("/")
+//    @GetMapping("/")
     public String homeSession(HttpServletRequest request, Model model) {
 
         Member member = (Member) sessionManager.getSession(request);
@@ -48,7 +50,7 @@ public class HomeController {
         return "loginHome";
     }
 
-//    @RequestMapping("/")
+//    @GetMapping("/")
     public String homeServletSession(HttpServletRequest request, Model model) {
 
         // session 없을 경우, 새로 생성하지 못하게 false 설정
@@ -64,12 +66,24 @@ public class HomeController {
         return "loginHome";
     }
 
-    @RequestMapping("/")
+//    @GetMapping("/")
     public String homeSpringSession(@SessionAttribute(name = HttpServletSessionConstants.SERVLET_SESSION, required = false) Member member, Model model) {
 
         /* session 찾을 때, Spring에서 제공하는 @SessionAttribute 사용
          * session을 신규 생성하지 않음
          */
+
+        if (member == null) return "home";
+
+        model.addAttribute("member", member);
+        return "loginHome";
+    }
+
+    @GetMapping("/")
+    public String homeArgumentResolver(@Login Member member, Model model) {
+
+        // @SessionAttribute(name = HttpServletSessionConstants.SERVLET_SESSION, required = false) Member member
+        // -> @Login Member member
 
         if (member == null) return "home";
 
