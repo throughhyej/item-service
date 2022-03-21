@@ -19,6 +19,11 @@ public class ServletExceptionController {
         throw new RuntimeException();
     }
 
+    @GetMapping("/error-400")
+    public void responseError400(HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "400 에러: BAD_REQUEST");
+    }
+
     @GetMapping("/error-404")
     public void responseError404(HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_NOT_FOUND, "404 에러: NOT FOUND");
