@@ -1,5 +1,7 @@
 package hello.itemservice.web;
 
+import hello.itemservice.exception.resolver.MyExceptionResolver;
+import hello.itemservice.exception.resolver.UserHandlerExceptionResolver;
 import hello.itemservice.web.argumentResolver.LoginArgumentResolver;
 import hello.itemservice.web.filter.LogServletFilter;
 import hello.itemservice.web.filter.LoginFilter;
@@ -9,6 +11,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -18,6 +21,12 @@ import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        resolvers.add(new MyExceptionResolver());
+        resolvers.add(new UserHandlerExceptionResolver());
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

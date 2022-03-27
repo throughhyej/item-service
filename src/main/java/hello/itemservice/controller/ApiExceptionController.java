@@ -1,5 +1,6 @@
 package hello.itemservice.controller;
 
+import hello.itemservice.exception.UserException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,9 @@ public class ApiExceptionController {
     public Member getMember(@PathVariable String id) {
 
         if ("ex".equals(id)) throw new RuntimeException("잘못된 사용자");
+        if ("bad".equals(id)) throw new IllegalArgumentException("잘못된 요청으로 임의 처리: 500 -> 400");
+        if ("user-ex".equals(id)) throw new UserException("사용자 오류");
+
         return new Member(id, "hello > " + id);
     }
 
