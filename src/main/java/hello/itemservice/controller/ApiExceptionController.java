@@ -10,12 +10,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestController
 public class ApiExceptionController {
+
+    @GetMapping("/api/default-handler-ex")
+    public String defaultException(@RequestParam Integer data) {
+        // data type mismatch exception 발생 시, 스프링이 자동으로 500 -> 400 에러로 변경해준다.
+        // DefaultHandlerExceptionResolver 사용 (스프링 내부 예외 처리)
+        return "OK";
+    }
 
     @GetMapping("/api/response-status/ex2")
     public void getException2() {
@@ -24,6 +32,7 @@ public class ApiExceptionController {
 
     @GetMapping("/api/response-status/ex1")
     public void getException1() {
+        // HTTP 응답코드 변경 처리
         throw new BadRequestException();
     }
 
