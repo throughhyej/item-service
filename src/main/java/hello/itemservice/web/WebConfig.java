@@ -24,8 +24,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-        resolvers.add(new MyExceptionResolver());
-        resolvers.add(new UserHandlerExceptionResolver());
+//        resolvers.add(new MyExceptionResolver());
+//        resolvers.add(new UserHandlerExceptionResolver());
     }
 
     @Override
@@ -39,15 +39,15 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 //        WebMvcConfigurer.super.addInterceptors(registry);
         /** Spring interceptor 예제: implements WebMvcConfigurer 필수 **/
-        registry.addInterceptor(new LogInterceptor())
-                .order(1)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/*.css", "/*.ico");
-
-        registry.addInterceptor(new LoginInterceptor())
-                .order(2)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/api/members/*", "/*.css", "/*.ico", "/*err*", "/error-page/*", "/members/add", "/login", "/");
+//        registry.addInterceptor(new LogInterceptor())
+//                .order(1)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns("/*.css", "/*.ico");
+//
+//        registry.addInterceptor(new LoginInterceptor())
+//                .order(2)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns("/api/members/*", "/*.css", "/*.ico", "/*err*", "/error-page/*", "/members/add", "/login", "/");
     }
 
 //    @Bean
