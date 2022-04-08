@@ -1,4 +1,4 @@
-package hello.itemservice.controller;
+package hello.itemservice.file;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
